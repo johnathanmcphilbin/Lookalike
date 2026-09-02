@@ -92,29 +92,36 @@ app.get('/api/hackatime/status', async (req, res) => {
   if (!token) return res.json({ connected: false });
 
   try {
-    const url = new URL('/api/v1/users/my/stats', HACKATIME_BASE);
-    // adjust to your program's actual window
-    url.searchParams.set('start_date', process.env.PROGRAM_START_DATE || '2026-01-01');
-    url.searchParams.set('end_date', process.env.PROGRAM_END_DATE || '2026-12-31');
-
-    const statsRes = await fetch(url.toString(), {
+    const meRes = await fetch(`${HACKATIME_BASE}/api/v1/authenticated/me`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-
-    if (!statsRes.ok) {
-      console.error('[lookatime] stats lookup failed', statsRes.status, await statsRes.text());
+    if (!meRes.ok) {
+      console.error('[lookatime] /me lookup failed', meRes.status, await meRes.text());
       return res.status(502).json({ connected: true, error: 'stats lookup failed' });
     }
-
-    const stats = await statsRes.json();
-    const trustLevel = stats?.trust_factor?.trust_level;
+    const me = await meRes.json();
+    const trustLevel = me?.trust_factor?.trust_level;
 
     // Step 6: red trust level is a hard stop, no exceptions
     if (trustLevel === 'red') {
       return res.json({ connected: true, banned: true, trustLevel, eligible: false });
     }
 
-    // Step 7: total_seconds already accounts for overlapping projects — don't re-derive it
+    const hoursUrl = new URL('/api/v1/authenticated/hours', HACKATIME_BASE);
+    // adjust to your program's actual window
+    hoursUrl.searchParams.set('start_date', process.env.PROGRAM_START_DATE || '2026-01-01');
+    hoursUrl.searchParams.set('end_date', process.env.PROGRAM_END_DATE || '2026-12-31');
+
+    const hoursRes = await fetch(hoursUrl.toString(), {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!hoursRes.ok) {
+      console.error('[lookatime] hours lookup failed', hoursRes.status, await hoursRes.text());
+      return res.status(502).json({ connected: true, error: 'stats lookup failed' });
+    }
+    const stats = await hoursRes.json();
+
+    // total_seconds already accounts for overlapping projects — don't re-derive it
     const hours = (stats.total_seconds || 0) / 3600;
     const minHours = Number(MIN_HOURS_REQUIRED);
     const eligible = hours >= minHours;
