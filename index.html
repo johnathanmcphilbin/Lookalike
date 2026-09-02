@@ -498,6 +498,28 @@
     aspect-ratio:1/1;
     border-radius:1px;
   }
+  .cork-thumb.placeholder{
+    background:#161513;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .cork-thumb.placeholder::before{
+    content:"?";
+    font-family:"Archivo Black", sans-serif;
+    font-size:2.4rem;
+    color:rgba(245,241,230,0.85);
+  }
+  .cork-thumb.placeholder .notch{
+    position:absolute;
+    width:22%; height:22%;
+    border:3px solid var(--amber);
+  }
+  .cork-thumb.placeholder .notch.tl{ top:8%; left:8%; border-right:none; border-bottom:none; }
+  .cork-thumb.placeholder .notch.tr{ top:8%; right:8%; border-left:none; border-bottom:none; }
+  .cork-thumb.placeholder .notch.bl{ bottom:8%; left:8%; border-right:none; border-top:none; }
+  .cork-thumb.placeholder .notch.br{ bottom:8%; right:8%; border-left:none; border-top:none; }
   .cork-cap{
     font-family:"Caveat", cursive; font-weight:700; font-size:16px;
     text-align:center; padding:8px 4px 12px; color:#221E1A;
@@ -782,7 +804,7 @@
         <div class="cork-item"><div class="pin" style="background:#DE9A2E"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#e8c07a,#b98a3f);"></div><div class="cork-cap">glasses on vs. glasses lost</div></div>
         <div class="cork-item"><div class="pin" style="background:#2C4A52"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#9c7d9e,#5a3f5e);"></div><div class="cork-cap">identifies cards in my binder</div></div>
         <div class="cork-item"><div class="pin" style="background:#E1432D"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#8fa876,#4d5e35);"></div><div class="cork-cap">desk: clean or completely destroyed</div></div>
-        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#c98a8a,#7a3f3f);"></div><div class="cork-cap">rock paper scissors</div></div>
+        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb placeholder"><span class="notch tl"></span><span class="notch tr"></span><span class="notch bl"></span><span class="notch br"></span></div><div class="cork-cap">this could be yours</div></div>
       </div>
     </div>
     <p class="no-scoring">you don't have to build any of these. pick something you actually want to teach your computer.</p>
