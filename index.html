@@ -905,8 +905,12 @@
         hackatimeEl.innerHTML = '<span class="hackatime-note">connected, but couldn\'t fetch your hours right now &mdash; try refreshing.</span>';
         return;
       }
+      if(data.noMatchingProject){
+        hackatimeEl.innerHTML = '<span class="hackatime-note">connected, but we can\'t find a hackatime project with "lookalike" in the name &mdash; rename your project in your editor\'s hackatime plugin so we can count the hours.</span>';
+        return;
+      }
       hackatimeEl.className = 'hackatime-status ' + (data.eligible ? 'ok' : '');
-      hackatimeEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged'
+      hackatimeEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged on this project'
         + (data.eligible ? ' &mdash; nice, you hit the recommended ' + data.minHours + 'h' : ' &mdash; ' + data.minHours + 'h recommended, not required')
         + '</span>';
     }).catch(function(){ /* no server running locally — leave the connect button as-is */ });

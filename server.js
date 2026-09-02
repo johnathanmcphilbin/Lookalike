@@ -14,6 +14,7 @@ const {
   AIRTABLE_FORM_URL,
   SESSION_SECRET,
   MIN_HOURS_REQUIRED = 2,
+  HACKATIME_PROJECT_KEYWORD = 'lookalike',
   PORT = 3000,
 } = process.env;
 
@@ -107,24 +108,39 @@ app.get('/api/hackatime/status', async (req, res) => {
       return res.json({ connected: true, banned: true, trustLevel, eligible: false });
     }
 
-    const hoursUrl = new URL('/api/v1/authenticated/hours', HACKATIME_BASE);
-    // adjust to your program's actual window
-    hoursUrl.searchParams.set('start_date', process.env.PROGRAM_START_DATE || '2026-01-01');
-    hoursUrl.searchParams.set('end_date', process.env.PROGRAM_END_DATE || '2026-12-31');
-
-    const hoursRes = await fetch(hoursUrl.toString(), {
+    // /authenticated/hours is account-wide across every project someone has ever
+    // logged, not just this one — that let anyone with unrelated Hackatime history
+    // pass instantly. Use /authenticated/projects and only count time on projects
+    // actually named for this program instead.
+    const projectsRes = await fetch(`${HACKATIME_BASE}/api/v1/authenticated/projects`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    if (!hoursRes.ok) {
-      console.error('[lookatime] hours lookup failed', hoursRes.status, await hoursRes.text());
+    if (!projectsRes.ok) {
+      console.error('[lookatime] projects lookup failed', projectsRes.status, await projectsRes.text());
       return res.status(502).json({ connected: true, error: 'stats lookup failed' });
     }
-    const stats = await hoursRes.json();
+    const projectsData = await projectsRes.json();
+    const keyword = HACKATIME_PROJECT_KEYWORD.toLowerCase();
+    const matchingProjects = (projectsData.projects || []).filter(function (p) {
+      return (p.name || '').toLowerCase().includes(keyword);
+    });
+    const totalSeconds = matchingProjects.reduce(function (sum, p) { return sum + (p.total_seconds || 0); }, 0);
 
-    // total_seconds already accounts for overlapping projects — don't re-derive it
-    const hours = (stats.total_seconds || 0) / 3600;
+    const hours = totalSeconds / 3600;
     const minHours = Number(MIN_HOURS_REQUIRED);
     const eligible = hours >= minHours;
+
+    if (matchingProjects.length === 0) {
+      return res.json({
+        connected: true,
+        banned: false,
+        trustLevel,
+        hours: 0,
+        minHours,
+        eligible: false,
+        noMatchingProject: true,
+      });
+    }
 
     res.json({
       connected: true,
