@@ -743,7 +743,7 @@
         <label>1. hackatime</label>
         <div id="hackatimeStatus" class="hackatime-status">
           <a href="/auth/login" class="hackatime-connect">connect hackatime</a>
-          <span class="hackatime-note">you need at least 2 hours logged before you can ship</span>
+          <span class="hackatime-note">2+ hours recommended before you ship, but not required</span>
         </div>
       </div>
       <div class="field">
@@ -831,18 +831,19 @@
     });
   })();
 
-  // gate the submission link on both hackatime hours AND verified hack club identity
+  // gate the submission link on verified hack club identity — hackatime hours are
+  // shown for info/recommendation only, not a hard requirement to submit
   (function(){
     var hackatimeEl = document.getElementById('hackatimeStatus');
     var hackclubEl = document.getElementById('hackclubStatus');
     var submitLink = document.getElementById('submitLink');
     if(!hackatimeEl || !hackclubEl || !submitLink) return;
 
-    var hackatimeOk = false;
+    var hackatimeBanned = false;
     var hackclubOk = false;
 
     function updateSubmitLink(){
-      if(hackatimeOk && hackclubOk){
+      if(hackclubOk && !hackatimeBanned){
         submitLink.classList.remove('submit-btn-disabled');
       } else {
         submitLink.classList.add('submit-btn-disabled');
@@ -852,20 +853,20 @@
     fetch('/api/hackatime/status').then(function(r){ return r.json(); }).then(function(data){
       if(!data.connected) return; // still shows the connect button
       if(data.banned){
+        hackatimeBanned = true;
         hackatimeEl.className = 'hackatime-status warn';
         hackatimeEl.innerHTML = '<span class="hackatime-note">hackatime says you\'re on the banned list &mdash; reach out on slack, we can\'t accept this submission.</span>';
+        updateSubmitLink();
         return;
       }
       if(data.error){
         hackatimeEl.innerHTML = '<span class="hackatime-note">connected, but couldn\'t fetch your hours right now &mdash; try refreshing.</span>';
         return;
       }
-      hackatimeOk = data.eligible;
-      hackatimeEl.className = 'hackatime-status ' + (hackatimeOk ? 'ok' : 'warn');
+      hackatimeEl.className = 'hackatime-status ' + (data.eligible ? 'ok' : '');
       hackatimeEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged'
-        + (hackatimeOk ? ' &mdash; you\'re good to ship' : ' &mdash; need ' + data.minHours + 'h to submit')
+        + (data.eligible ? ' &mdash; nice, you hit the recommended ' + data.minHours + 'h' : ' &mdash; ' + data.minHours + 'h recommended, not required')
         + '</span>';
-      updateSubmitLink();
     }).catch(function(){ /* no server running locally — leave the connect button as-is */ });
 
     fetch('/api/hackclub/status').then(function(r){ return r.json(); }).then(function(data){
