@@ -44,7 +44,7 @@ app.get('/auth/login', (req, res) => {
   url.searchParams.set('client_id', HACKATIME_CLIENT_ID);
   url.searchParams.set('redirect_uri', HACKATIME_REDIRECT_URI);
   url.searchParams.set('response_type', 'code');
-  url.searchParams.set('scope', 'profile+read');
+  url.searchParams.set('scope', 'profile read');
   res.redirect(url.toString());
 });
 
