@@ -1,0 +1,17 @@
+{
+  "name": "lookalike",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lookalike — Hack Club program site, with Hackatime OAuth for submission gating.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "express-session": "^1.18.0",
+    "node-fetch": "^2.7.0",
+    "dotenv": "^16.4.5"
+  }
+}

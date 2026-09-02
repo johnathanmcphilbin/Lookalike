@@ -91,26 +91,19 @@
     padding:40px 0 56px;
     text-align:center;
   }
-  .wordmark{
-    display:inline-flex;
-    align-items:center;
-    gap:10px;
-    font-family:"Space Mono", monospace;
-    font-size:13px;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    padding:6px 14px;
-    border:1.5px solid var(--ink);
-    border-radius:999px;
-    background:var(--card);
-    box-shadow:var(--shadow);
-    transform:rotate(-2deg);
+  .corner-badge{
+    position:fixed;
+    top:18px; left:18px;
+    width:96px;
+    z-index:500;
+    display:block;
+    filter:drop-shadow(0 4px 8px rgba(34,30,26,0.2));
+    transform:rotate(-4deg);
+    transition:transform 0.15s ease;
   }
-  .wordmark .dot{
-    width:8px; height:8px; border-radius:50%; background:var(--red);
-    box-shadow:0 0 0 3px rgba(225,67,45,0.18);
-    animation:blinkdot 1.6s infinite;
-  }
+  .corner-badge:hover{ transform:rotate(-4deg) scale(1.06); }
+  .corner-badge:active{ transform:rotate(-4deg) scale(0.96); }
+  .corner-badge img{ width:100%; height:auto; display:block; }
   @keyframes blinkdot{ 0%,100%{opacity:1;} 50%{opacity:0.25;} }
 
   h1.headline{
@@ -169,7 +162,7 @@
   .cta:hover .arrow{ transform:translateX(4px); }
 
   .cta-note{
-    margin-top:14px; font-family:"Caveat", cursive; font-size:19px; color:var(--ink-soft); font-weight:700;
+    margin-top:14px; font-family:"Caveat", cursive; font-size:25px; color:var(--ink-soft); font-weight:700;
     transform:rotate(-1deg);
   }
 
@@ -184,33 +177,55 @@
   .deal-grid{
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-    gap:18px;
+    gap:26px 22px;
+    padding-top:6px;
   }
   .deal-card{
+    position:relative;
     background:var(--card);
     border:1.5px solid var(--ink);
-    border-radius:12px;
-    padding:22px 20px;
+    padding:26px 20px 22px;
     box-shadow:var(--shadow);
+    border-radius:3px 14px 5px 12px;
   }
+  .deal-card::before{
+    content:"";
+    position:absolute; top:-13px; left:50%;
+    width:66px; height:24px;
+    background:var(--tape);
+    box-shadow:0 3px 4px var(--tape-shadow);
+    opacity:0.9;
+  }
+  .deal-card:nth-child(1){ transform:rotate(-2deg); }
+  .deal-card:nth-child(2){ transform:rotate(1.3deg); margin-top:10px; }
+  .deal-card:nth-child(3){ transform:rotate(-1deg); }
+  .deal-card:nth-child(1)::before{ transform:translateX(-50%) rotate(-4deg); }
+  .deal-card:nth-child(2)::before{ transform:translateX(-50%) rotate(3deg); }
+  .deal-card:nth-child(3)::before{ transform:translateX(-50%) rotate(-2deg); }
+  .deal-card:hover{ transform:rotate(0deg) translateY(-2px); transition:transform 0.15s ease; }
+
   .deal-card .tag{
-    font-family:"Space Mono", monospace;
-    font-size:11px;
-    text-transform:uppercase;
-    letter-spacing:0.1em;
-    color:var(--paper);
-    background:var(--ink);
-    padding:3px 8px;
-    border-radius:5px;
+    font-family:"Caveat", cursive;
+    font-weight:700;
+    font-size:22px;
+    color:var(--ink);
     display:inline-block;
-    margin-bottom:12px;
+    margin-bottom:10px;
+    position:relative;
+    transform:rotate(-1.5deg);
   }
-  .deal-card ul{ margin:0; padding-left:18px; }
+  .deal-card .tag::after{
+    content:"";
+    position:absolute; left:-4px; right:-6px; bottom:-2px; height:9px;
+    z-index:-1;
+    transform:rotate(-1deg);
+  }
+  .deal-card ul{ margin:0; padding-left:18px; font-size:14.5px; }
   .deal-card li{ margin-bottom:8px; line-height:1.45; }
   .deal-card li:last-child{ margin-bottom:0; }
-  .deal-card.you-get .tag{ background:var(--green); }
-  .deal-card.it-costs .tag{ background:var(--amber); color:var(--ink); }
-  .deal-card.you-earn .tag{ background:var(--red); }
+  .deal-card.you-get .tag::after{ background:rgba(76,140,86,0.28); }
+  .deal-card.it-costs .tag::after{ background:rgba(222,154,46,0.35); }
+  .deal-card.you-earn .tag::after{ background:rgba(225,67,45,0.22); }
 
   .no-scoring{
     margin-top:18px;
@@ -319,10 +334,81 @@
   .train-btn .count{ font-weight:700; color:var(--navy); }
   .train-btn .swatch{ width:14px; height:14px; border-radius:50%; }
   .train-hint{ text-align:center; font-family:"Space Mono", monospace; font-size:11.5px; color:var(--ink-soft); }
+  .train-tips{
+    text-align:center; font-family:"Space Mono", monospace; font-size:11px; line-height:1.5;
+    color:var(--ink-soft); margin-top:10px; padding:10px 12px; border:1px dashed var(--line);
+    border-radius:8px; background:var(--paper-2);
+  }
+  .train-tips b{ color:var(--ink); }
 
   .model-status{
     text-align:center; font-family:"Space Mono", monospace; font-size:12px; color:var(--ink-soft); margin-top:10px;
   }
+
+  /* ---------- steps ---------- */
+  .steps-list{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px,1fr));
+    gap:18px 16px;
+    max-width:920px; margin:0 auto;
+  }
+  .step{
+    position:relative;
+    border:1.5px solid var(--ink); border-radius:12px;
+    padding:14px 16px 12px;
+    box-shadow:var(--shadow);
+  }
+  .step:nth-child(4n+1){ transform:rotate(-1.4deg); }
+  .step:nth-child(4n+2){ transform:rotate(1deg); }
+  .step:nth-child(4n+3){ transform:rotate(-0.6deg); }
+  .step:nth-child(4n+4){ transform:rotate(1.6deg); }
+  .step:hover{ transform:rotate(0deg) translateY(-3px); transition:transform 0.15s ease; }
+
+  .step-num{
+    width:28px; height:28px; border-radius:50%;
+    background:var(--ink); color:var(--paper);
+    font-family:"Space Mono", monospace; font-weight:700; font-size:13px;
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:8px;
+    box-shadow:0 2px 0 rgba(0,0,0,0.2);
+  }
+  .step h3{
+    font-family:"Archivo Black", sans-serif; font-size:14.5px;
+    margin-bottom:6px; text-transform:lowercase; line-height:1.25;
+  }
+  .step p{ color:var(--ink-soft); font-size:12.5px; line-height:1.5; margin:0; }
+  .step code{
+    font-family:"Space Mono", monospace; font-size:0.88em;
+    background:rgba(255,255,255,0.6); padding:1px 5px; border-radius:4px;
+  }
+
+  .step-full{ display:none; margin-top:8px; }
+  .step-full p{ margin:0 0 8px; }
+  .step-full p:last-child{ margin-bottom:0; }
+  .step-full ul{ margin:0 0 8px; padding-left:16px; }
+  .step-full li{ font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin-bottom:2px; }
+  .step.expanded .step-full{ display:block; }
+  .step.expanded .step-brief{ display:none; }
+  .step-toggle{
+    margin-top:10px;
+    font-family:"Space Mono", monospace; font-size:11px; font-weight:700;
+    color:var(--ink); background:rgba(255,255,255,0.55);
+    border:1px solid var(--ink); border-radius:20px;
+    padding:4px 10px; cursor:pointer;
+    display:inline-flex; align-items:center; gap:4px;
+  }
+  .step-toggle:hover{ background:rgba(255,255,255,0.85); }
+  .step-toggle .chev{ display:inline-block; transition:transform 0.15s ease; }
+  .step.expanded .step-toggle .chev{ transform:rotate(180deg); }
+
+  .step-red{ background:#FBE4DE; border-color:#C6402C; }
+  .step-red .step-num{ background:var(--red); }
+  .step-navy{ background:#DCE7E9; border-color:var(--navy); }
+  .step-navy .step-num{ background:var(--navy); }
+  .step-amber{ background:#FBEACB; border-color:#B6791F; }
+  .step-amber .step-num{ background:var(--amber); color:var(--ink); }
+  .step-green{ background:#E1EEE2; border-color:#3C6D44; }
+  .step-green .step-num{ background:var(--green); }
 
   /* ---------- submit ---------- */
   .submit-box{
@@ -371,6 +457,19 @@
     font-family:"Space Mono", monospace; font-size:12px; background:var(--paper-2);
     padding:6px 10px; border-radius:20px; border:1px solid var(--line);
   }
+
+  .hackatime-status{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    font-family:"Space Mono", monospace; font-size:12.5px;
+  }
+  .hackatime-connect{
+    display:inline-block; background:var(--navy); color:var(--paper);
+    padding:9px 16px; border-radius:8px; text-decoration:none; font-weight:700;
+  }
+  .hackatime-connect:hover{ opacity:0.9; }
+  .hackatime-note{ color:var(--ink-soft); }
+  .hackatime-status.ok .hackatime-note{ color:var(--green); font-weight:700; }
+  .hackatime-status.warn .hackatime-note{ color:var(--red); font-weight:700; }
 
   .submit-btn{
     margin-top:6px;
@@ -432,11 +531,6 @@
     display:inline-block; margin-top:10px; font-family:"Space Mono", monospace; font-weight:700;
     color:var(--navy); text-decoration:none; border-bottom:2px solid var(--navy);
   }
-  .proof-line{
-    margin-top:24px; display:inline-flex; align-items:center; gap:8px;
-    font-family:"Space Mono", monospace; font-size:11.5px; color:var(--ink-soft);
-    border:1px solid var(--line); border-radius:20px; padding:6px 12px;
-  }
 
   @media (max-width:560px){
     section{ padding:44px 0; }
@@ -453,11 +547,12 @@
 <div class="grain" id="grain"></div>
 <div class="scan"></div>
 
+<a class="corner-badge" href="https://hackclub.com" target="_blank" rel="noopener" aria-label="Hack Club"><img src="hackclub-badge.png" alt="Hack Club"></a>
+
 <header class="hero">
   <div class="wrap">
-    <div class="wordmark"><span class="dot"></span> lookalike · a hack club program</div>
-    <h1 class="headline">teach your webcam to know <em>your</em> stuff</h1>
-    <p class="sub">point a camera at something. show it a few photos. watch it actually learn to recognize it &mdash; <b>trained live in your browser</b>, on pictures you took, not some dataset scraped off the internet.</p>
+    <h1 class="headline">teach your webcam to recognize <em>your</em> stuff</h1>
+    <p class="sub">point your camera at something. give it a few photos. train a model and watch it recognize the thing you taught it. <b>everything runs in your browser</b> ,you use photos you took yourself.</p>
 
     <div class="mascot" id="heroMascot">
       <svg viewBox="0 0 120 120" fill="none">
@@ -477,7 +572,7 @@
     <div class="cta-row">
       <a class="cta" href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener">start training <span class="arrow">&rarr;</span></a>
     </div>
-    <div class="cta-note">no really, click it, it takes 3 hours tops</div>
+    <div class="cta-note">no really, you can finish this in about 3 hours</div>
   </div>
 </header>
 
@@ -486,33 +581,33 @@
 <section id="deal">
   <div class="wrap">
     <h2 class="deal-title">the deal</h2>
-    <p class="deal-sub">no scoring, no stages, no leaderboard. just build the thing.</p>
+    <p class="deal-sub">no leaderboard. no complicated requirements. just build something that works.</p>
     <div class="deal-grid">
       <div class="deal-card you-get">
-        <span class="tag">you get</span>
+        <span class="tag">you build</span>
         <ul>
-          <li>a webcam demo that recognizes <em>your</em> thing &mdash; your pets, your face, your card binder, whatever</li>
-          <li>runs right in the browser, no install</li>
-          <li>a real, working computer vision project you can show off</li>
+          <li>a webcam demo that recognizes something <em>you</em> chose</li>
+          <li>something that runs in your browser</li>
+          <li>a real computer vision project you can show people</li>
         </ul>
       </div>
       <div class="deal-card it-costs">
-        <span class="tag">it costs</span>
+        <span class="tag">you need</span>
         <ul>
-          <li>about 3 hours, start to shipped</li>
-          <li>photos <em>you</em> took &mdash; no stock datasets, no scraped images</li>
+          <li>about 3 hours</li>
+          <li>photos <em>you</em> took yourself</li>
           <li>2+ hours logged on hackatime</li>
         </ul>
       </div>
       <div class="deal-card you-earn">
-        <span class="tag">you earn</span>
+        <span class="tag">you get</span>
         <ul>
-          <li>a real USB webcam, mailed to your door</li>
-          <li>that's it. that's the prize. it's the thing your project needed</li>
+          <li>a Logitech C270 HD webcam, shipped to you</li>
+          <li>that's all it takes :) </li>
         </ul>
       </div>
     </div>
-    <p class="no-scoring">no tiers. no points. ship it and it's yours.</p>
+    <p class="no-scoring">no tiers. no points. build it, ship it, get the webcam.</p>
   </div>
 </section>
 
@@ -521,7 +616,7 @@
 <section id="example">
   <div class="wrap">
     <h2 class="example-title">try it before you build it</h2>
-    <p class="example-sub">this is the whole loop, live, right now. show it your hand doing rock, paper, or scissors a few times each, then hold one up and see if it gets it. this is what you'll be building &mdash; just smaller.</p>
+    <p class="example-sub">here's a small example of what you're making. turn on your camera, show it rock, paper, and scissors a few times, then hold one up and see what it predicts.</p>
 
     <div class="polaroid">
       <div class="cam-frame" id="camFrame">
@@ -529,7 +624,7 @@
         <div class="rec-badge"><span class="dot"></span> live</div>
         <div class="status-chip state-idle" id="statusChip">not trained yet</div>
         <div class="cam-overlay" id="camOverlay">
-          <div>this demo needs your camera &mdash; nothing leaves your browser.</div>
+          <div>this demo needs your camera. nothing leaves your browser.</div>
           <button id="startCamBtn">turn on camera</button>
         </div>
       </div>
@@ -552,8 +647,99 @@
             ✂️ scissors <span class="count" id="count-scissors">0</span>
           </button>
         </div>
-        <div class="train-hint">hold up a sign, hit its button 5-8 times from different angles, repeat for the other two &mdash; then just hold one up and wait.</div>
-        <div class="model-status" id="modelStatus">loading the eye's brain (mobilenet)&hellip;</div>
+        <div class="train-hint">hold up a sign and hit its button 5 to 8 times from different angles. do the same for the other two. then hold one up and see if it gets it right.</div>
+        <div class="train-tips">
+          <b>for better results:</b> get your hand close to the camera, keep the lighting fairly similar, and change the angle a little when taking your training photos.
+        </div>
+        <div class="model-status" id="modelStatus">loading the model&hellip;</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="film-divider"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+<section id="steps">
+  <div class="wrap">
+    <h2 class="example-title">how to build yours</h2>
+    <p class="example-sub">eight steps. about 3 hours total.</p>
+    <div class="steps-list">
+      <div class="step step-red">
+        <div class="step-num">1</div>
+        <h3>pick your idea</h3>
+        <p class="step-brief">pick something you can easily photograph - keep it to 2-4 classes.</p>
+        <div class="step-full">
+          <p>pick something you can photograph easily. some ideas:</p>
+          <ul>
+            <li>your two pets</li>
+            <li>your desk when it's clean vs. messy</li>
+            <li>different cards from your collection</li>
+            <li>two objects in your room</li>
+            <li>different people on camera</li>
+          </ul>
+          <p>keep it to 2-4 classes. more classes means more photos and more training.</p>
+        </div>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-navy">
+        <div class="step-num">2</div>
+        <h3>collect your photos</h3>
+        <p class="step-brief">~30-50 photos per class, varied angle &amp; lighting.</p>
+        <p class="step-full">take around 30 to 50 photos per class using your laptop webcam or phone. change the angle and lighting a little - don't take all 50 photos from exactly the same position. this will probably take around 30 to 40 minutes.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-amber">
+        <div class="step-num">3</div>
+        <h3>sort your photos</h3>
+        <p class="step-brief">one folder per class - or upload straight into teachable machine.</p>
+        <p class="step-full">put each class into its own folder, for example <code>biscuit/</code> and <code>luna/</code>. if you're using teachable machine, you can upload the photos directly into each class instead.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-green">
+        <div class="step-num">4</div>
+        <h3>train the classifier</h3>
+        <p class="step-brief">upload to teachable machine, hit train, done in minutes.</p>
+        <p class="step-full">open <a href="https://teachablemachine.withgoogle.com/" target="_blank" rel="noopener">teachable machine</a>. create an image project, add your classes, upload your photos, and train it. training happens in your browser - you don't need a GPU or anything installed.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-navy">
+        <div class="step-num">5</div>
+        <h3>test it</h3>
+        <p class="step-brief">check the live preview, retrain if it's getting confused.</p>
+        <p class="step-full">teachable machine gives you a live webcam preview with the prediction for each class. try each thing you trained it on. if it's getting confused, take some more photos and train it again.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-red">
+        <div class="step-num">6</div>
+        <h3>export the model</h3>
+        <p class="step-brief">export as tensorflow.js - model.json plus weight files.</p>
+        <p class="step-full">once you're happy with it, export the model as tensorflow.js. you should get a <code>model.json</code> file and some weight files. these can run directly in a browser.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-green">
+        <div class="step-num">7</div>
+        <h3>make it do something</h3>
+        <p class="step-brief">~15-20 lines of JS connecting the prediction to a reaction - software-only is fine.</p>
+        <div class="step-full">
+          <p>now make the prediction actually do something. we've provided the webcam setup and model loading &mdash; your job is to connect the prediction to something. for example:</p>
+          <ul>
+            <li>change the background</li>
+            <li>play a sound</li>
+            <li>show a gif</li>
+            <li>change some text</li>
+            <li>turn an LED on</li>
+            <li>move a servo</li>
+          </ul>
+          <p>you don't need to make anything complicated. any of the software-only options above count as a complete answer on their own - hardware is a bonus, not a requirement. this part can be around 15 to 20 lines of javascript.</p>
+        </div>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
+      </div>
+      <div class="step step-amber">
+        <div class="step-num">8</div>
+        <h3>record it and ship</h3>
+        <p class="step-brief">20-30s demo video, then submit repo + video + teachable machine link.</p>
+        <p class="step-full">record a 20 to 30 second video of your project working. show the camera recognizing the thing and the reaction actually happening. then push your project to github and submit your github repo, your demo video, and your teachable machine project.</p>
+        <button class="step-toggle" type="button">more <span class="chev">&darr;</span></button>
       </div>
     </div>
   </div>
@@ -563,17 +749,24 @@
 
 <section id="submit">
   <div class="wrap">
-    <h2 class="deal-title" style="text-align:center;">shipped one? tape it here</h2>
-    <p class="deal-sub" style="text-align:center;">drop your links and a clip of it working. that's the whole submission.</p>
+    <h2 class="deal-title" style="text-align:center;">shipped one? put it here</h2>
+    <p class="deal-sub" style="text-align:center;">show us what you made.</p>
 
     <form class="submit-box" id="submitForm">
-      <div class="field">
-        <label for="repoInput">repo link (or teachable machine project)</label>
-        <input type="url" id="repoInput" placeholder="https://github.com/you/your-lookalike-project" required>
+      <div class="field hackatime-field">
+        <label>hackatime</label>
+        <div id="hackatimeStatus" class="hackatime-status">
+          <a href="/auth/login" class="hackatime-connect">connect hackatime</a>
+          <span class="hackatime-note">you need at least 2 hours logged before you can ship</span>
+        </div>
       </div>
       <div class="field">
-        <label for="videoInput">demo video link</label>
-        <input type="url" id="videoInput" placeholder="link to a clip of it recognizing your stuff, live" required>
+        <label for="repoInput">repo link</label>
+        <input type="url" id="repoInput" placeholder="your github repo or teachable machine project" required>
+      </div>
+      <div class="field">
+        <label for="videoInput">demo video</label>
+        <input type="url" id="videoInput" placeholder="a screen recording or gif showing your project working" required>
       </div>
       <div class="field">
         <label>screen recording or gif of it working</label>
@@ -596,18 +789,19 @@
 
 <section id="gallery">
   <div class="wrap" style="max-width:920px;">
-    <h2 class="deal-title" style="text-align:center;">what people already built</h2>
-    <p class="deal-sub" style="text-align:center;">the corkboard is growing. yours could be next.</p>
+    <h2 class="deal-title" style="text-align:center;">things people have built</h2>
+    <p class="deal-sub" style="text-align:center;">some ideas to get you started:</p>
     <div class="cork">
       <div class="cork-grid">
-        <div class="cork-item"><div class="pin" style="background:#E1432D"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#c9a876,#8b6b4a);"></div><div class="cork-cap">knows my dog Biscuit (not the neighbor's dog)</div></div>
-        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#7f9db0,#3c5a68);"></div><div class="cork-cap">tells my two roommates apart, mostly</div></div>
+        <div class="cork-item"><div class="pin" style="background:#E1432D"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#c9a876,#8b6b4a);"></div><div class="cork-cap">knows my dog Biscuit, not the neighbor's dog</div></div>
+        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#7f9db0,#3c5a68);"></div><div class="cork-cap">tells my two roommates apart</div></div>
         <div class="cork-item"><div class="pin" style="background:#DE9A2E"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#e8c07a,#b98a3f);"></div><div class="cork-cap">glasses on vs. glasses lost</div></div>
-        <div class="cork-item"><div class="pin" style="background:#2C4A52"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#9c7d9e,#5a3f5e);"></div><div class="cork-cap">IDs every card in my binder</div></div>
-        <div class="cork-item"><div class="pin" style="background:#E1432D"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#8fa876,#4d5e35);"></div><div class="cork-cap">desk: clean or certified disaster</div></div>
-        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#c98a8a,#7a3f3f);"></div><div class="cork-cap">rock paper scissors, undefeated vs. my sister</div></div>
+        <div class="cork-item"><div class="pin" style="background:#2C4A52"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#9c7d9e,#5a3f5e);"></div><div class="cork-cap">identifies cards in my binder</div></div>
+        <div class="cork-item"><div class="pin" style="background:#E1432D"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#8fa876,#4d5e35);"></div><div class="cork-cap">desk: clean or completely destroyed</div></div>
+        <div class="cork-item"><div class="pin" style="background:#4C8C56"></div><div class="cork-thumb" style="background:linear-gradient(135deg,#c98a8a,#7a3f3f);"></div><div class="cork-cap">rock paper scissors</div></div>
       </div>
     </div>
+    <p class="no-scoring">you don't have to build any of these. pick something you actually want to teach your computer.</p>
   </div>
 </section>
 
@@ -622,8 +816,7 @@
         <circle cx="56" cy="56" r="3" fill="#fff" opacity="0.8"/>
       </svg>
     </div>
-    <p>built solo by one teenager, not a company &mdash; part of <a class="hc-link" href="https://hackclub.com" target="_blank" rel="noopener">Hack Club &rarr;</a></p>
-    <div class="proof-line" id="proofLine"><span id="proofDot">👁️</span> <span id="proofText">yes, this really works</span></div>
+    <p>built by a teenager, not a company. part of <a class="hc-link" href="https://hackclub.com" target="_blank" rel="noopener">Hack Club &rarr;</a></p>
   </div>
 </footer>
 
@@ -673,6 +866,46 @@
     });
   })();
 
+  // step card expand/collapse
+  (function(){
+    document.querySelectorAll('.step-toggle').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var card = btn.closest('.step');
+        var expanded = card.classList.toggle('expanded');
+        btn.firstChild.textContent = expanded ? 'less ' : 'more ';
+      });
+    });
+  })();
+
+  // hackatime connect status
+  (function(){
+    var statusEl = document.getElementById('hackatimeStatus');
+    var submitBtn = document.querySelector('.submit-btn');
+    if(!statusEl) return;
+
+    fetch('/api/hackatime/status').then(function(r){ return r.json(); }).then(function(data){
+      if(!data.connected){
+        return; // still shows the connect button
+      }
+      if(data.banned){
+        statusEl.className = 'hackatime-status warn';
+        statusEl.innerHTML = '<span class="hackatime-note">hackatime says you\'re on the banned list &mdash; reach out on slack, we can\'t accept this submission.</span>';
+        if(submitBtn) submitBtn.disabled = true;
+        return;
+      }
+      if(data.error){
+        statusEl.innerHTML = '<span class="hackatime-note">connected, but couldn\'t fetch your hours right now &mdash; try refreshing.</span>';
+        return;
+      }
+      var ok = data.eligible;
+      statusEl.className = 'hackatime-status ' + (ok ? 'ok' : 'warn');
+      statusEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged'
+        + (ok ? ' &mdash; you\'re good to ship' : ' &mdash; need ' + data.minHours + 'h to submit')
+        + '</span>';
+      if(submitBtn) submitBtn.disabled = !ok;
+    }).catch(function(){ /* no server running locally — leave the connect button as-is */ });
+  })();
+
   // submit form (no backend — just an honest confirmation)
   (function(){
     var form = document.getElementById('submitForm');
@@ -682,17 +915,6 @@
       confirm.style.display = 'block';
       confirm.scrollIntoView({behavior:'smooth', block:'nearest'});
     });
-  })();
-
-  // proof line loop
-  (function(){
-    var dot = document.getElementById('proofDot');
-    var frames = ['👁️','😑','👁️'];
-    var i = 0;
-    setInterval(function(){
-      i = (i+1) % frames.length;
-      dot.textContent = frames[i];
-    }, 900);
   })();
 
   // ---------------- live rock/paper/scissors teach demo ----------------
@@ -716,7 +938,7 @@
         video.srcObject = stream;
         overlay.style.display = 'none';
       }).catch(function(){
-        overlay.innerHTML = '<div>camera access was blocked. check your browser\\'s site permissions and reload.</div>';
+        overlay.innerHTML = '<div>camera access was blocked. check your browser\'s site permissions and reload.</div>';
       });
     });
 
@@ -736,13 +958,13 @@
       .then(function(m){
         net = m;
         knn = knnClassifier.create();
-        modelStatus.textContent = 'ready — turn on your camera and start teaching it';
+        modelStatus.textContent = 'ready? turn on your camera and start teaching it';
         trainBtns.forEach(function(b){ b.disabled = false; });
         running = true;
         loop();
       })
       .catch(function(err){
-        modelStatus.textContent = 'the model couldn\\'t load — try refreshing.';
+        modelStatus.textContent = 'the model couldn\'t load — try refreshing.';
         console.error(err);
       });
 
@@ -763,19 +985,28 @@
       });
     });
 
+    var PREDICT_INTERVAL_MS = 350;
+    var predicting = false;
+
     function loop(){
       if(!running) return;
-      requestAnimationFrame(loop);
-      if(!net || !knn || !video.srcObject || knn.getNumClasses() === 0) return;
+      setTimeout(loop, PREDICT_INTERVAL_MS);
+      if(predicting || !net || !knn || !video.srcObject || knn.getNumClasses() === 0) return;
+      predicting = true;
+      var totalExamples = counts.rock + counts.paper + counts.scissors;
+      var k = Math.max(1, Math.min(5, totalExamples));
       var activation = net.infer(video, true);
-      knn.predictClass(activation, 10).then(function(res){
+      knn.predictClass(activation, k).then(function(res){
         activation.dispose();
+        predicting = false;
         var label = ['rock','paper','scissors'][res.label] || res.label;
         var conf = res.confidences[res.label];
         if(conf > 0.7){
-          setChip('match', 'that\\'s ' + label + '! (' + Math.round(conf*100) + '%)');
+          setChip('match', 'that\'s ' + label + '! (' + Math.round(conf*100) + '%)');
+        } else {
+          setChip('idle', 'maybe ' + label + '... (' + Math.round(conf*100) + '%)');
         }
-      }).catch(function(){ activation.dispose(); });
+      }).catch(function(){ activation.dispose(); predicting = false; });
     }
   })();
 </script>
