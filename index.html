@@ -239,6 +239,12 @@
   /* ---------- worked example / polaroid ---------- */
   .example-title{ text-align:center; font-family:"Archivo Black"; font-size:clamp(26px,4vw,36px); margin-bottom:8px;}
   .example-sub{ text-align:center; color:var(--ink-soft); max-width:52ch; margin:0 auto 36px; }
+  .steps-callout{
+    max-width:520px; margin:-14px auto 36px;
+    text-align:center; font-family:"Caveat", cursive; font-weight:700; font-size:21px;
+    color:var(--navy); transform:rotate(-1deg);
+  }
+  .steps-callout em{ font-style:normal; background:linear-gradient(180deg, transparent 62%, var(--amber) 62%); padding:0 2px; }
 
   .polaroid{
     background:#fff;
@@ -649,6 +655,7 @@
   <div class="wrap">
     <h2 class="example-title">how to build yours</h2>
     <p class="example-sub">eight steps. about 3 hours total.</p>
+    <p class="steps-callout">and yes &mdash; the thing you ship is <em>literally a webpage</em>, same shape as the demo up top. an html page with some js that loads your trained model and reacts to your live webcam. that's it, that's the whole project.</p>
     <div class="steps-list">
       <div class="step step-red">
         <div class="step-num">1</div>
@@ -794,6 +801,7 @@
       </svg>
     </div>
     <p>built by a teenager, not a company. part of <a class="hc-link" href="https://hackclub.com" target="_blank" rel="noopener">Hack Club &rarr;</a></p>
+    <a class="hc-link" href="https://github.com/johnathanmcphilbin/Lookalike" target="_blank" rel="noopener">view source on GitHub &rarr;</a>
     <a class="legal-link" href="https://hackclub.com/privacy-and-terms" target="_blank" rel="noopener">privacy &amp; terms</a>
   </div>
 </footer>
