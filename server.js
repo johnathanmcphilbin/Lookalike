@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
+const cookieSession = require('cookie-session');
 const fetch = require('node-fetch');
 const path = require('path');
 
@@ -29,11 +29,15 @@ if (!HACKCLUB_CLIENT_ID || !HACKCLUB_CLIENT_SECRET || !HACKCLUB_REDIRECT_URI) {
 
 const app = express();
 
-app.use(session({
-  secret: SESSION_SECRET || 'dev-only-secret-change-me',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { httpOnly: true, sameSite: 'lax' },
+// cookie-session (not express-session's default MemoryStore) because Vercel is
+// serverless — session data has to travel in the signed cookie itself, not sit in
+// one instance's RAM, or it silently vanishes on the next request.
+app.use(cookieSession({
+  name: 'lookalike.sess',
+  keys: [SESSION_SECRET || 'dev-only-secret-change-me'],
+  maxAge: 24 * 60 * 60 * 1000,
+  httpOnly: true,
+  sameSite: 'lax',
 }));
 
 app.use(express.static(path.join(__dirname)));

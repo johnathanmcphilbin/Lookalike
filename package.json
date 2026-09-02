@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "express": "^4.19.2",
-    "express-session": "^1.18.0",
+    "cookie-session": "^2.1.0",
     "node-fetch": "^2.7.0",
     "dotenv": "^16.4.5"
   }
