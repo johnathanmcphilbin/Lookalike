@@ -108,8 +108,23 @@ app.get('/api/hackatime/projects', async (req, res) => {
   const projects = await fetchHackatimeProjects(token);
   if (projects === null) return res.status(502).json({ error: 'projects lookup failed' });
 
+  const sorted = projects
+    .map(function (p) {
+      return {
+        name: p.name,
+        total_seconds: p.total_seconds || 0,
+        most_recent_heartbeat: p.most_recent_heartbeat || null,
+      };
+    })
+    .sort(function (a, b) {
+      // most recently worked-on first; projects with no heartbeat sort last
+      if (!a.most_recent_heartbeat) return 1;
+      if (!b.most_recent_heartbeat) return -1;
+      return new Date(b.most_recent_heartbeat) - new Date(a.most_recent_heartbeat);
+    });
+
   res.json({
-    projects: projects.map(function (p) { return { name: p.name, total_seconds: p.total_seconds || 0 }; }),
+    projects: sorted,
     selected: req.session.hackatimeSelectedProject || null,
   });
 });

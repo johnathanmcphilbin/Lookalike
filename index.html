@@ -465,10 +465,28 @@
   .hackatime-note{ color:var(--ink-soft); }
   .hackatime-status.ok .hackatime-note{ color:var(--green); font-weight:700; }
   .hackatime-status.warn .hackatime-note{ color:var(--red); font-weight:700; }
+  .project-picker{
+    display:flex; flex-direction:column; gap:10px;
+    width:100%; max-width:380px;
+  }
+  .project-select-wrap{ position:relative; }
   .project-select{
-    font-family:"Space Mono", monospace; font-size:12.5px;
-    padding:8px 10px; border-radius:8px; border:1.5px solid var(--line);
-    background:var(--paper); color:var(--ink);
+    width:100%;
+    appearance:none; -webkit-appearance:none;
+    font-family:"Space Mono", monospace; font-size:13px;
+    padding:11px 36px 11px 14px; border-radius:8px;
+    border:1.5px solid var(--ink); background:var(--card); color:var(--ink);
+    cursor:pointer;
+  }
+  .project-select:focus{ outline:2.5px solid var(--amber); outline-offset:1px; }
+  .project-select-wrap::after{
+    content:"▾";
+    position:absolute; top:50%; right:14px; transform:translateY(-50%);
+    pointer-events:none; color:var(--ink-soft); font-size:12px;
+  }
+  .project-confirm-btn{ align-self:flex-start; }
+  .project-confirm-btn:disabled{
+    background:var(--line); color:var(--ink-soft); cursor:not-allowed; opacity:0.8;
   }
   .change-project-link{
     background:none; border:none; padding:0; cursor:pointer;
@@ -910,38 +928,54 @@
           hackatimeEl.innerHTML = '<span class="hackatime-note">connected, but we don\'t see any hackatime projects on your account yet &mdash; log some time first, then refresh.</span>';
           return;
         }
+
+        var wrap = document.createElement('div');
+        wrap.className = 'project-picker';
+
+        var note = document.createElement('span');
+        note.className = 'hackatime-note';
+        note.textContent = 'which hackatime project is this submission?';
+        wrap.appendChild(note);
+
+        var selectWrap = document.createElement('div');
+        selectWrap.className = 'project-select-wrap';
         var select = document.createElement('select');
         select.className = 'project-select';
         var placeholder = document.createElement('option');
-        placeholder.textContent = 'which project is this?';
+        placeholder.textContent = 'choose a project…';
         placeholder.value = '';
         select.appendChild(placeholder);
-        data.projects.forEach(function(p){
+        // server already sorts most-recently-worked-on first
+        data.projects.forEach(function(p, i){
           var opt = document.createElement('option');
           opt.value = p.name;
           var h = Math.round((p.total_seconds/3600) * 100) / 100;
-          opt.textContent = p.name + ' (' + h + 'h)';
+          opt.textContent = p.name + ' — ' + h + 'h' + (i === 0 ? ' (most recent)' : '');
           select.appendChild(opt);
         });
+        selectWrap.appendChild(select);
+        wrap.appendChild(selectWrap);
+
         var btn = document.createElement('button');
         btn.type = 'button';
-        btn.className = 'hackatime-connect';
+        btn.className = 'hackatime-connect project-confirm-btn';
         btn.textContent = 'use this project';
+        btn.disabled = true;
+        select.addEventListener('change', function(){ btn.disabled = !select.value; });
         btn.addEventListener('click', function(){
           if(!select.value) return;
+          btn.disabled = true;
+          btn.textContent = 'saving…';
           fetch('/api/hackatime/select-project', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name: select.value })
           }).then(function(){ loadHackatimeStatus(); });
         });
+        wrap.appendChild(btn);
+
         hackatimeEl.innerHTML = '';
-        var note = document.createElement('span');
-        note.className = 'hackatime-note';
-        note.textContent = 'pick which hackatime project is this submission:';
-        hackatimeEl.appendChild(note);
-        hackatimeEl.appendChild(select);
-        hackatimeEl.appendChild(btn);
+        hackatimeEl.appendChild(wrap);
       });
     }
 
