@@ -14,7 +14,6 @@ const {
   AIRTABLE_FORM_URL,
   SESSION_SECRET,
   MIN_HOURS_REQUIRED = 2,
-  HACKATIME_PROJECT_KEYWORD = 'lookalike',
   PORT = 3000,
 } = process.env;
 
@@ -87,7 +86,46 @@ app.get('/auth/callback', async (req, res) => {
   }
 });
 
-// Steps 5-7: look up hours + trust level, decide eligibility
+async function fetchHackatimeProjects(token) {
+  const projectsRes = await fetch(`${HACKATIME_BASE}/api/v1/authenticated/projects`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  if (!projectsRes.ok) {
+    console.error('[lookatime] projects lookup failed', projectsRes.status, await projectsRes.text());
+    return null;
+  }
+  const data = await projectsRes.json();
+  return data.projects || [];
+}
+
+// List the user's hackatime projects so they can pick which one is this submission —
+// hours are per-project, chosen by hand, not auto-summed/keyword-matched. Auto-matching
+// let unrelated projects with a similar name count, or missed real ones with a different name.
+app.get('/api/hackatime/projects', async (req, res) => {
+  const token = req.session.hackatimeAccessToken;
+  if (!token) return res.status(401).json({ error: 'not connected' });
+
+  const projects = await fetchHackatimeProjects(token);
+  if (projects === null) return res.status(502).json({ error: 'projects lookup failed' });
+
+  res.json({
+    projects: projects.map(function (p) { return { name: p.name, total_seconds: p.total_seconds || 0 }; }),
+    selected: req.session.hackatimeSelectedProject || null,
+  });
+});
+
+app.post('/api/hackatime/select-project', express.json(), (req, res) => {
+  const token = req.session.hackatimeAccessToken;
+  if (!token) return res.status(401).json({ error: 'not connected' });
+
+  const { name } = req.body || {};
+  if (!name) return res.status(400).json({ error: 'missing project name' });
+
+  req.session.hackatimeSelectedProject = name;
+  res.json({ ok: true, selected: name });
+});
+
+// Steps 5-7: look up trust level + hours on whichever single project they picked
 app.get('/api/hackatime/status', async (req, res) => {
   const token = req.session.hackatimeAccessToken;
   if (!token) return res.json({ connected: false });
@@ -108,44 +146,24 @@ app.get('/api/hackatime/status', async (req, res) => {
       return res.json({ connected: true, banned: true, trustLevel, eligible: false });
     }
 
-    // /authenticated/hours is account-wide across every project someone has ever
-    // logged, not just this one — that let anyone with unrelated Hackatime history
-    // pass instantly. Use /authenticated/projects and only count time on projects
-    // actually named for this program instead.
-    const projectsRes = await fetch(`${HACKATIME_BASE}/api/v1/authenticated/projects`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!projectsRes.ok) {
-      console.error('[lookatime] projects lookup failed', projectsRes.status, await projectsRes.text());
-      return res.status(502).json({ connected: true, error: 'stats lookup failed' });
+    const selectedName = req.session.hackatimeSelectedProject;
+    if (!selectedName) {
+      return res.json({ connected: true, banned: false, trustLevel, needsProjectSelection: true, eligible: false });
     }
-    const projectsData = await projectsRes.json();
-    const keyword = HACKATIME_PROJECT_KEYWORD.toLowerCase();
-    const matchingProjects = (projectsData.projects || []).filter(function (p) {
-      return (p.name || '').toLowerCase().includes(keyword);
-    });
-    const totalSeconds = matchingProjects.reduce(function (sum, p) { return sum + (p.total_seconds || 0); }, 0);
 
-    const hours = totalSeconds / 3600;
+    const projects = await fetchHackatimeProjects(token);
+    if (projects === null) return res.status(502).json({ connected: true, error: 'stats lookup failed' });
+
+    const selectedProject = projects.find(function (p) { return p.name === selectedName; });
+    const hours = (selectedProject ? selectedProject.total_seconds : 0) / 3600;
     const minHours = Number(MIN_HOURS_REQUIRED);
     const eligible = hours >= minHours;
-
-    if (matchingProjects.length === 0) {
-      return res.json({
-        connected: true,
-        banned: false,
-        trustLevel,
-        hours: 0,
-        minHours,
-        eligible: false,
-        noMatchingProject: true,
-      });
-    }
 
     res.json({
       connected: true,
       banned: false,
       trustLevel,
+      selectedProject: selectedName,
       hours: Math.round(hours * 100) / 100,
       minHours,
       eligible,
