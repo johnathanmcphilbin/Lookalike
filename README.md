@@ -52,10 +52,12 @@ Getting a prediction on the screen isn't really the end goal.
 
 For example, you could train the model to recognize:
 
-```text
+
+
 Something white
 Something black
-```
+
+
 
 Then make your website switch between **light mode and dark mode** depending on what the camera sees.
 
@@ -97,10 +99,10 @@ Choose 2 to 4 classes.
 
 For example:
 
-```text
+
 Biscuit
 Cake
-```
+
 
 ### 2. Take some photos
 
