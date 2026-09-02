@@ -432,30 +432,8 @@
   }
   .field input:focus{ outline:2.5px solid var(--amber); outline-offset:1px; border-color:var(--ink); }
 
-  .dropzone{
-    border:2.5px dashed var(--ink-soft);
-    border-radius:12px;
-    padding:34px 16px;
-    text-align:center;
-    font-family:"Caveat", cursive;
-    font-size:21px;
-    color:var(--ink-soft);
-    background:repeating-linear-gradient(135deg, rgba(34,30,26,0.02) 0 10px, transparent 10px 20px);
-    cursor:pointer;
-    transition:border-color 0.15s, background 0.15s;
-    position:relative;
-  }
-  .dropzone.drag{ border-color:var(--red); color:var(--red); background:rgba(225,67,45,0.06); }
-  .dropzone .tape-corner{
-    position:absolute; top:-12px; left:16px; width:60px; height:22px; background:var(--tape);
-    transform:rotate(-4deg); box-shadow:0 2px 3px var(--tape-shadow);
-  }
-  .dropzone .tape-corner.right{ left:auto; right:16px; transform:rotate(4deg); }
-  .dropzone small{ display:block; font-family:"Space Mono", monospace; font-size:11px; margin-top:8px; color:var(--ink-soft); }
-  .file-chip{
-    margin-top:12px; display:inline-flex; align-items:center; gap:8px;
-    font-family:"Space Mono", monospace; font-size:12px; background:var(--paper-2);
-    padding:6px 10px; border-radius:20px; border:1px solid var(--line);
+  .submit-hint{
+    font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 12px;
   }
 
   .hackatime-status{
@@ -474,14 +452,16 @@
   .submit-btn{
     margin-top:6px;
     width:100%;
+    display:block; text-align:center;
     font-family:"Space Mono", monospace; font-weight:700; font-size:16px;
     background:var(--green); color:#fff; border:none; border-radius:10px;
-    padding:16px; cursor:pointer;
+    padding:16px; cursor:pointer; text-decoration:none;
     box-shadow:0 5px 0 #2f6338;
   }
   .submit-btn:active{ transform:translateY(3px); box-shadow:0 2px 0 #2f6338; }
-  .submit-confirm{
-    display:none; text-align:center; margin-top:16px; font-family:"Caveat", cursive; font-size:20px; color:var(--green); font-weight:700;
+  .submit-btn-disabled{
+    background:var(--line); color:var(--ink-soft); box-shadow:0 5px 0 #a89c78;
+    pointer-events:none;
   }
 
   /* ---------- gallery corkboard ---------- */
@@ -758,36 +738,27 @@
     <h2 class="deal-title" style="text-align:center;">shipped one? put it here</h2>
     <p class="deal-sub" style="text-align:center;">show us what you made.</p>
 
-    <form class="submit-box" id="submitForm">
+    <div class="submit-box">
       <div class="field hackatime-field">
-        <label>hackatime</label>
+        <label>1. hackatime</label>
         <div id="hackatimeStatus" class="hackatime-status">
           <a href="/auth/login" class="hackatime-connect">connect hackatime</a>
           <span class="hackatime-note">you need at least 2 hours logged before you can ship</span>
         </div>
       </div>
       <div class="field">
-        <label for="repoInput">repo link</label>
-        <input type="url" id="repoInput" placeholder="your github repo or teachable machine project" required>
-      </div>
-      <div class="field">
-        <label for="videoInput">demo video</label>
-        <input type="url" id="videoInput" placeholder="a screen recording or gif showing your project working" required>
-      </div>
-      <div class="field">
-        <label>screen recording or gif of it working</label>
-        <div class="dropzone" id="dropzone">
-          <span class="tape-corner"></span>
-          <span class="tape-corner right"></span>
-          tape it here (or click to browse)
-          <small>a gif or screen recording of the demo reacting to your actual camera &mdash; not a pre-recorded clip fed into it</small>
-          <div id="fileChipWrap"></div>
+        <label>2. verify it's really you</label>
+        <div id="hackclubStatus" class="hackatime-status">
+          <a href="/auth/hackclub/login" class="hackatime-connect">verify with hack club</a>
+          <span class="hackatime-note">confirms your identity before we hand you the submission form</span>
         </div>
-        <input type="file" id="fileInput" accept="image/gif,video/*" style="display:none;">
       </div>
-      <button type="submit" class="submit-btn">ship it</button>
-      <div class="submit-confirm" id="submitConfirm">got it! go log your hours and go build the next one.</div>
-    </form>
+      <div class="field">
+        <label>3. the actual submission</label>
+        <p class="submit-hint">repo link, demo video, and a screenshot &mdash; once you're verified above, this button takes you straight there with your name and email already filled in.</p>
+        <a id="submitLink" class="submit-btn submit-btn-disabled" href="/submit">go to the submission form</a>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -849,30 +820,6 @@
     setInterval(blink, 3200 + Math.random()*1400);
   })();
 
-  // dropzone
-  (function(){
-    var dz = document.getElementById('dropzone');
-    var fileInput = document.getElementById('fileInput');
-    var chipWrap = document.getElementById('fileChipWrap');
-    function showFile(name){
-      chipWrap.innerHTML = '<span class="file-chip">📎 '+name+'</span>';
-    }
-    dz.addEventListener('click', function(){ fileInput.click(); });
-    fileInput.addEventListener('change', function(){
-      if(fileInput.files[0]) showFile(fileInput.files[0].name);
-    });
-    ['dragenter','dragover'].forEach(function(evt){
-      dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.add('drag'); });
-    });
-    ['dragleave','drop'].forEach(function(evt){
-      dz.addEventListener(evt, function(e){ e.preventDefault(); dz.classList.remove('drag'); });
-    });
-    dz.addEventListener('drop', function(e){
-      var f = e.dataTransfer.files[0];
-      if(f) showFile(f.name);
-    });
-  })();
-
   // step card expand/collapse
   (function(){
     document.querySelectorAll('.step-toggle').forEach(function(btn){
@@ -884,44 +831,55 @@
     });
   })();
 
-  // hackatime connect status
+  // gate the submission link on both hackatime hours AND verified hack club identity
   (function(){
-    var statusEl = document.getElementById('hackatimeStatus');
-    var submitBtn = document.querySelector('.submit-btn');
-    if(!statusEl) return;
+    var hackatimeEl = document.getElementById('hackatimeStatus');
+    var hackclubEl = document.getElementById('hackclubStatus');
+    var submitLink = document.getElementById('submitLink');
+    if(!hackatimeEl || !hackclubEl || !submitLink) return;
+
+    var hackatimeOk = false;
+    var hackclubOk = false;
+
+    function updateSubmitLink(){
+      if(hackatimeOk && hackclubOk){
+        submitLink.classList.remove('submit-btn-disabled');
+      } else {
+        submitLink.classList.add('submit-btn-disabled');
+      }
+    }
 
     fetch('/api/hackatime/status').then(function(r){ return r.json(); }).then(function(data){
-      if(!data.connected){
-        return; // still shows the connect button
-      }
+      if(!data.connected) return; // still shows the connect button
       if(data.banned){
-        statusEl.className = 'hackatime-status warn';
-        statusEl.innerHTML = '<span class="hackatime-note">hackatime says you\'re on the banned list &mdash; reach out on slack, we can\'t accept this submission.</span>';
-        if(submitBtn) submitBtn.disabled = true;
+        hackatimeEl.className = 'hackatime-status warn';
+        hackatimeEl.innerHTML = '<span class="hackatime-note">hackatime says you\'re on the banned list &mdash; reach out on slack, we can\'t accept this submission.</span>';
         return;
       }
       if(data.error){
-        statusEl.innerHTML = '<span class="hackatime-note">connected, but couldn\'t fetch your hours right now &mdash; try refreshing.</span>';
+        hackatimeEl.innerHTML = '<span class="hackatime-note">connected, but couldn\'t fetch your hours right now &mdash; try refreshing.</span>';
         return;
       }
-      var ok = data.eligible;
-      statusEl.className = 'hackatime-status ' + (ok ? 'ok' : 'warn');
-      statusEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged'
-        + (ok ? ' &mdash; you\'re good to ship' : ' &mdash; need ' + data.minHours + 'h to submit')
+      hackatimeOk = data.eligible;
+      hackatimeEl.className = 'hackatime-status ' + (hackatimeOk ? 'ok' : 'warn');
+      hackatimeEl.innerHTML = '<span class="hackatime-note">' + data.hours + 'h logged'
+        + (hackatimeOk ? ' &mdash; you\'re good to ship' : ' &mdash; need ' + data.minHours + 'h to submit')
         + '</span>';
-      if(submitBtn) submitBtn.disabled = !ok;
+      updateSubmitLink();
     }).catch(function(){ /* no server running locally — leave the connect button as-is */ });
-  })();
 
-  // submit form (no backend — just an honest confirmation)
-  (function(){
-    var form = document.getElementById('submitForm');
-    var confirm = document.getElementById('submitConfirm');
-    form.addEventListener('submit', function(e){
-      e.preventDefault();
-      confirm.style.display = 'block';
-      confirm.scrollIntoView({behavior:'smooth', block:'nearest'});
-    });
+    fetch('/api/hackclub/status').then(function(r){ return r.json(); }).then(function(data){
+      if(!data.connected) return; // still shows the verify button
+      hackclubOk = true;
+      hackclubEl.className = 'hackatime-status ok';
+      var name = data.identity && data.identity.name ? data.identity.name : 'you';
+      var note = document.createElement('span');
+      note.className = 'hackatime-note';
+      note.textContent = 'verified as ' + name;
+      hackclubEl.innerHTML = '';
+      hackclubEl.appendChild(note);
+      updateSubmitLink();
+    }).catch(function(){ /* no server running locally — leave the verify button as-is */ });
   })();
 
   // ---------------- live rock/paper/scissors teach demo ----------------
