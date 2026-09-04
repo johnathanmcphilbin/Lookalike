@@ -437,6 +437,78 @@
     box-shadow:var(--shadow);
     transform:rotate(0.4deg);
   }
+
+  .submit-closed-wrap{ position:relative; max-width:640px; margin:0 auto; }
+  .submit-box-closed{
+    max-width:none;
+    opacity:0.45;
+    filter:grayscale(0.6);
+    pointer-events:none;
+    user-select:none;
+  }
+  .caution-tape{
+    position:absolute;
+    left:-6%; right:-6%; top:38%;
+    transform:rotate(-3deg);
+    background:repeating-linear-gradient(45deg,
+      var(--amber) 0 22px,
+      var(--ink) 22px 44px
+    );
+    padding:10px 0;
+    box-shadow:0 4px 14px rgba(0,0,0,0.35);
+    overflow:hidden;
+    white-space:nowrap;
+    z-index:5;
+  }
+  .caution-tape span{
+    display:inline-block;
+    font-family:"Space Mono", monospace;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:0.05em;
+    color:var(--paper);
+    text-shadow:0 1px 2px rgba(0,0,0,0.5);
+    padding-left:4px;
+  }
+  .closed-sign{
+    position:absolute;
+    top:-16px; right:6%;
+    background:var(--card);
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    padding:10px 18px;
+    box-shadow:var(--shadow);
+    transform:rotate(4deg);
+    text-align:center;
+    z-index:6;
+  }
+  .closed-sign::before{
+    content:"";
+    position:absolute; top:-12px; left:50%; transform:translateX(-50%) rotate(-4deg);
+    width:56px; height:20px;
+    background:var(--tape);
+    box-shadow:0 2px 3px var(--tape-shadow);
+    opacity:0.9;
+  }
+  .closed-sign-title{
+    display:block;
+    font-family:"Archivo Black", sans-serif;
+    font-size:20px;
+    color:var(--red);
+    text-transform:uppercase;
+    letter-spacing:0.03em;
+  }
+  .closed-sign-sub{
+    display:block;
+    margin-top:2px;
+    font-family:"Space Mono", monospace;
+    font-size:10.5px;
+    color:var(--ink-soft);
+  }
+
+  @media (max-width:560px){
+    .closed-sign{ position:static; margin:14px auto 0; display:table; transform:rotate(-1.5deg); }
+  }
   .field{ margin-bottom:18px; }
   .field label{
     display:block; font-family:"Space Mono", monospace; font-size:12px;
@@ -809,25 +881,32 @@
     <p class="deal-sub" style="text-align:center;">show us what you made.</p>
     <p class="deadline-banner">deadline: friday, sept 4 &middot; 12pm ET </p>
 
-    <div class="submit-box">
-      <div class="field hackatime-field">
-        <label>1. hackatime</label>
-        <div id="hackatimeStatus" class="hackatime-status">
-          <a href="/auth/login" class="hackatime-connect">connect hackatime</a>
-          <span class="hackatime-note">2+ hours recommended before you ship, but not required</span>
+    <div class="submit-closed-wrap">
+      <div class="submit-box submit-box-closed">
+        <div class="field hackatime-field">
+          <label>1. hackatime</label>
+          <div id="hackatimeStatus" class="hackatime-status">
+            <a href="/auth/login" class="hackatime-connect">connect hackatime</a>
+            <span class="hackatime-note">2+ hours recommended before you ship, but not required</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>2. verify it's really you</label>
+          <div id="hackclubStatus" class="hackatime-status">
+            <a href="/auth/hackclub/login" class="hackatime-connect">verify with hack club</a>
+            <span class="hackatime-note">confirms your identity before we hand you the submission form</span>
+          </div>
+        </div>
+        <div class="field">
+          <label>3. the actual submission</label>
+          <p class="submit-hint">repo link, demo video, and a screenshot &mdash; once you're verified above, this button takes you straight there with your name and email already filled in.</p>
+          <a id="submitLink" class="submit-btn submit-btn-disabled" href="/submit">go to the submission form</a>
         </div>
       </div>
-      <div class="field">
-        <label>2. verify it's really you</label>
-        <div id="hackclubStatus" class="hackatime-status">
-          <a href="/auth/hackclub/login" class="hackatime-connect">verify with hack club</a>
-          <span class="hackatime-note">confirms your identity before we hand you the submission form</span>
-        </div>
-      </div>
-      <div class="field">
-        <label>3. the actual submission</label>
-        <p class="submit-hint">repo link, demo video, and a screenshot &mdash; once you're verified above, this button takes you straight there with your name and email already filled in.</p>
-        <a id="submitLink" class="submit-btn submit-btn-disabled" href="/submit">go to the submission form</a>
+      <div class="caution-tape"><span>SUBMISSIONS CLOSED &nbsp;&bull;&nbsp; SUBMISSIONS CLOSED &nbsp;&bull;&nbsp; SUBMISSIONS CLOSED &nbsp;&bull;&nbsp; SUBMISSIONS CLOSED &nbsp;&bull;&nbsp; </span></div>
+      <div class="closed-sign">
+        <span class="closed-sign-title">closed</span>
+        <span class="closed-sign-sub">ended 12pm ET &middot; friday, sept 4</span>
       </div>
     </div>
   </div>
